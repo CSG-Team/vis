@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>统计图</title>
+  <style>
+    g {
+      cursor: pointer;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    img {
+      display: block;
+    }
+
+    body {
+      background: black;
+    }
+
+    @font-face {
+      font-family: source-regular;
+      src: url(./asserts/SourceHanSansCN-Regular-2.otf) format("opentype")
+    }
+
+    @font-face {
+      font-family: source-bold;
+      src: url(./asserts/SourceHanSansCN-Bold-2.otf) format("opentype")
+    }
+  </style>
+</head>
+
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="./data.js"></script>
+
+  <script src="cfg.js"></script>
+  <script src="./gradientColor.js"></script>
+  <script src="./render.js"></script>
+
+
+
+</body>
+
+</html>
