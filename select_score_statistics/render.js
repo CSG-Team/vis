@@ -58,7 +58,7 @@ newData.forEach((d, i) => {
 
 d3.select('body').append('h2')
   .attr('style', `font-size:${CFG.title.fontSize}px;color:#ffffff;text-align:center;padding-top:${CFG.title.top}px;font-family:source-bold`)
-  .text('实践教学学分占比&选修课学分占比')
+  .text(CFG.title.content)
 
 const svg = d3.select('body')
   .append('svg');
@@ -225,7 +225,13 @@ tyepData.forEach((item, index) => {
     .attr('startOffset', '50%')
     .attr('fill', '#ffffff')
     .append('tspan')
-    .attr('dy', -CFG.typeCircle.outTextL)
+    // .attr('dy', () => {
+    //   if(index === 2) {
+    //     return CFG.typeCircle.outTextL + CFG.typeCircle.outTextSiz
+    //   }
+    //   return  -CFG.typeCircle.outTextL
+    // })
+    .attr('dy',  -CFG.typeCircle.outTextL)
     .attr('font-size', CFG.typeCircle.outTextSize)
     .attr('font-family', 'source-bold')
     .text(item.zh)
@@ -237,6 +243,12 @@ tyepData.forEach((item, index) => {
     .attr('fill', '#ffffff')
     .append('tspan')
     .attr('dy', CFG.typeCircle.innerTextL)
+    // .attr('dy', () => {
+    //   if(index === 2) {
+    //     return -CFG.typeCircle.outTextL
+    //   }
+    //   return  CFG.typeCircle.innerTextL
+    // })
     .attr('font-size', CFG.typeCircle.innerTextSize)
     .attr('font-family', 'source-regular')
     .text(item.en)
@@ -249,18 +261,18 @@ tyepData.forEach((item, index) => {
 // 添加渐变
 const artGrad = svg.append('defs')
   .append('linearGradient')
-  .attr('x1', '0%').attr('y1', '100%').attr('x2', '0%').attr('y2', '0%')
+  .attr('x1', '0%').attr('y1', '100%').attr('x2', '0%').attr('y2', '20%')
   .attr('id', 'artGrad')
 artGrad.append('stop')
   .attr('offset', '0%')
-  .attr('style', 'stop-color:#085158;stop-opacity:50%')
+  .attr('style', 'stop-color:#085158;stop-opacity:70%')
 artGrad.append('stop')
   .attr('offset', '100%')
   .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
 
 const designGrad = svg.append('defs').append('linearGradient')
   .attr('id', 'designGrad')
-  .attr('x1', '100%').attr('y1', '0%').attr('x2', '0%').attr('y2', '0%')
+  .attr('x1', '0%').attr('y1', '0%').attr('x2', '0%').attr('y2', '100%')
 designGrad.append('stop')
   .attr('offset', '0%')
   .attr('style', 'stop-color:#00A93A;stop-opacity:50%')
@@ -270,10 +282,10 @@ designGrad.append('stop')
 
 const humanityGrad = svg.append('defs').append('linearGradient')
   .attr('id', 'humanityGrad')
-  .attr('x1', '0%').attr('y1', '0%').attr('x2', '0%').attr('y2', '100%')
+  .attr('x1', '0%').attr('y1', '0%').attr('x2', '70%').attr('y2', '0%')
 humanityGrad.append('stop')
   .attr('offset', '0%')
-  .attr('style', 'stop-color:#085158;stop-opacity:50%')
+  .attr('style', 'stop-color:#085158;stop-opacity:60%')
 humanityGrad.append('stop')
   .attr('offset', '100%')
   .attr('style', 'stop-color:#ffffff;stop-opacity:5%')

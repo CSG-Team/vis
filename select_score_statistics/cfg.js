@@ -32,7 +32,7 @@ const CFG = {
   },
 
   // 起始角度
-  startAngle: 0,
+  startAngle: (36 / 360) * Math.PI * 2,
 
   // 指示器
   indicator: {
@@ -78,7 +78,8 @@ const CFG = {
   },
   title: {
     fontSize: R / 2.9,
-    top: R / 2
+    top: R / 2,
+    content: '实践教学学分占比&选修课学分占比'
   }
 
 
