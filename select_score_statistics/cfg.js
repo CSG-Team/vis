@@ -1,5 +1,9 @@
 const R = 140
 const CFG = {
+  animation:{
+    waveInterval: 4000,
+  },
+
   container: {
     width: window.innerWidth,
     height: window.innerHeight,
