@@ -1,7 +1,9 @@
 const R = 140
 const CFG = {
   animation:{
+    initMoving: 1000, // 初始化绘制的时间
     waveInterval: 2500, // 动画循环的时间
+
   },
 
   container: {

@@ -5,10 +5,7 @@ function start() {
   }, CFG.animation.waveInterval)
 }
 
-// 启动
-setTimeout(() => {
-  start();
-})
+
 let flag = false;
 
 function waveAnimation() {
@@ -36,46 +33,6 @@ function waveAnimation() {
       middle_points: prevMidPoints,
       base_points,
     } = idPathMap.get(id)
-
-    // const offsets = base_points.map((base, index) => {
-    //   return {
-    //     offset_x:  base.x - prevMidPoints[index].x ,
-    //     offset_y:  base.y - prevMidPoints[index].y ,
-    //   }
-    // })
-
-    // offsets.shift();
-
-    // 生成最新的
-    // const waveLineRange = CFG.fans.lineMax - CFG.fans.lineMin;
-    // let tempAngle = path_start_angle + preAngle / 5;
-    // let randomLineLength = CFG.fans.lineMin + Math.random() * waveLineRange
-
-    // // 中间点
-    // const x = center.x + randomLineLength * Math.sin(tempAngle)
-    // const y = center.y + randomLineLength * Math.cos(tempAngle)
-
-    // offsets.push({
-    //   offset_x: x - base_points[base_points.length - 1].x,
-    //   offset_y: y - base_points[base_points.length - 1].y,
-    // })
-
-    // 重新组合
-
-    // const factor = flag ? 1 : (-1)
-
-
-    // console.log('>>>>', offsets)
-    // console.log('>>>>', base_points)
-
-    // // 生成几个中间点位置
-    // let middle_points = base_points.map((base, index) => {
-    //   console.log('+++', base[index])
-    //   return {
-    //     x: base.x + offsets[index].offset_x,
-    //     y: base.y + offsets[index].offset_y
-    //   }
-    // });
 
 
     let middle_points = []

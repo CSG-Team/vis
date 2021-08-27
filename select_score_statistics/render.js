@@ -59,326 +59,335 @@ newData.forEach((d, i) => {
 d3.select('body').append('h2')
   .attr('style', `font-size:${CFG.title.fontSize}px;color:#ffffff;text-align:center;padding-top:${CFG.title.top}px;font-family:source-bold`)
   .text(CFG.title.content)
+  .style('opacity', 0)
+  .transition().duration(CFG.animation.initMoving).ease(d3.easeSin)
+  .style('opacity', 1)
 
 const svg = d3.select('body')
   .append('svg');
 
+['path_art_0', 'path_art_1', 'path_art_2'].forEach(classname => {
+  svg.append('path').attr('class', classname)
+})
+
 
 // 绘制百分比区域 ===================
-// 绘画区域
-const tyepData = [{
-    zh: '美术学科',
-    en: 'ART',
-    count: artCount,
-    pathId: 'art',
-  },
-  {
-    zh: '设计学科',
-    en: 'DESIGN',
-    count: designCount,
-    pathId: 'design',
-  },
-  {
-    zh: '人文学科',
-    en: 'HUMANITY DISCIPLINES',
-    count: humanityCount,
-    pathId: 'humanity',
-  },
-]
-
-// 起始角度
-let path_start_angle = CFG.startAngle - preAngle / 2 + preAngle / 4;
-let arc_start_angle = CFG.startAngle - preAngle / 2
-
 const idPathMap = new Map();
-// 弧形路径文字
-tyepData.forEach((item, index) => {
 
-  const id = `wavePath${index}`;
+function drawArea() {
 
-  const path_end_angle = path_start_angle + preAngle * item.count - preAngle / 2;
-  const arc_end_angle = arc_start_angle + preAngle * item.count;
+  // 绘画区域
+  const tyepData = [{
+      zh: '美术学科',
+      en: 'ART',
+      count: artCount,
+      pathId: 'art',
+    },
+    {
+      zh: '设计学科',
+      en: 'DESIGN',
+      count: designCount,
+      pathId: 'design',
+    },
+    {
+      zh: '人文学科',
+      en: 'HUMANITY DISCIPLINES',
+      count: humanityCount,
+      pathId: 'humanity',
+    },
+  ]
 
+  // 起始角度
+  let path_start_angle = CFG.startAngle - preAngle / 2 + preAngle / 4;
+  let arc_start_angle = CFG.startAngle - preAngle / 2
 
-  // 起始点
-  const start_point_x = center.x + CFG.fans.centerOuter * Math.sin(path_start_angle);
-  const start_point_y = center.y + CFG.fans.centerOuter * Math.cos(path_start_angle);
+  // 弧形路径文字
+  tyepData.forEach((item, index) => {
 
-  // 对应的结束点
-  const end_point_x = center.x + CFG.fans.centerOuter * Math.sin(path_end_angle);
-  const end_point_y = center.y + CFG.fans.centerOuter * Math.cos(path_end_angle);
+    const id = `wavePath${index}`;
 
-  const endCurve_up_x = center.x + CFG.fans.centerInner * Math.sin(path_start_angle);
-  const endCurve_up_y = center.y + CFG.fans.centerInner * Math.cos(path_start_angle);
-
-  const endCurve_down_x = center.x + CFG.fans.centerInner * Math.sin(path_end_angle);
-  const endCurve_down_y = center.y + CFG.fans.centerInner * Math.cos(path_end_angle);
-
-  // 边界点 上边界
-  const positionUp_x = center.x + CFG.fans.lineMin * Math.sin(path_start_angle)
-  const positionUp_y = center.y + CFG.fans.lineMin * Math.cos(path_start_angle)
-
-  const positionUpCurve_x = center.x + CFG.fans.straightLineLength * Math.sin(path_start_angle)
-  const positionUpCurve_y = center.y + CFG.fans.straightLineLength * Math.cos(path_start_angle)
-
-
-  // 下边界
-  const positionDown_x = center.x + CFG.fans.lineMin * Math.sin(path_end_angle)
-  const positionDown_y = center.y + CFG.fans.lineMin * Math.cos(path_end_angle)
-
-  // const positionDownCurve_x = center.x + CFG.fans.straightLineLength * Math.sin(path_end_angle)
-  // const positionDownCurve_y = center.y + CFG.fans.straightLineLength * Math.cos(path_end_angle)
+    const path_end_angle = path_start_angle + preAngle * item.count - preAngle / 2;
+    const arc_end_angle = arc_start_angle + preAngle * item.count;
 
 
+    // 起始点
+    const start_point_x = center.x + CFG.fans.centerOuter * Math.sin(path_start_angle);
+    const start_point_y = center.y + CFG.fans.centerOuter * Math.cos(path_start_angle);
 
-  // 生成几个中间点位置
-  let middle_points = [];
-  let base_points = [];
-  const waveLineRange = CFG.fans.lineMax - CFG.fans.lineMin;
-  let tempAngle = path_start_angle + preAngle / 5;
+    // 对应的结束点
+    const end_point_x = center.x + CFG.fans.centerOuter * Math.sin(path_end_angle);
+    const end_point_y = center.y + CFG.fans.centerOuter * Math.cos(path_end_angle);
 
-  while (tempAngle < path_end_angle - preAngle / 5) {
+    const endCurve_up_x = center.x + CFG.fans.centerInner * Math.sin(path_start_angle);
+    const endCurve_up_y = center.y + CFG.fans.centerInner * Math.cos(path_start_angle);
 
-    const randomLineLength = CFG.fans.lineMin + Math.random() * waveLineRange;
-    // 中间点
-    const x = center.x + randomLineLength * Math.sin(tempAngle)
-    const y = center.y + randomLineLength * Math.cos(tempAngle)
-    middle_points.push({
-      x,
-      y
-    });
+    const endCurve_down_x = center.x + CFG.fans.centerInner * Math.sin(path_end_angle);
+    const endCurve_down_y = center.y + CFG.fans.centerInner * Math.cos(path_end_angle);
 
-    base_points.push({
-      x: center.x + (CFG.fans.lineMin + waveLineRange / 2) * Math.sin(tempAngle),
-      y: center.y + (CFG.fans.lineMin + waveLineRange / 2) * Math.cos(tempAngle)
-    })
-    tempAngle += CFG.fans.everyWaveAngle;
+    // 边界点 上边界
+    const positionUp_x = center.x + CFG.fans.lineMin * Math.sin(path_start_angle)
+    const positionUp_y = center.y + CFG.fans.lineMin * Math.cos(path_start_angle)
 
-  }
+    const positionUpCurve_x = center.x + CFG.fans.straightLineLength * Math.sin(path_start_angle)
+    const positionUpCurve_y = center.y + CFG.fans.straightLineLength * Math.cos(path_start_angle)
 
-  if (middle_points.length % 2 !== 0) {
-    middle_points.pop()
-    base_points.pop()
-    if (middle_points.length < 4) { // 这种情况需要重新生成中间点（小于四个） 要不svg路径报错
-      middle_points = [];
-      base_points = [];
-      const waveLineRange = CFG.fans.lineMax - CFG.fans.lineMin;
-      let start = path_start_angle + preAngle / 6;
-      let end = path_end_angle - preAngle / 6
 
-      let perAngle = (end - start) / 4
+    // 下边界
+    const positionDown_x = center.x + CFG.fans.lineMin * Math.sin(path_end_angle)
+    const positionDown_y = center.y + CFG.fans.lineMin * Math.cos(path_end_angle)
 
-      let angle = start;
-      let count = 0
-      while (count < 4) {
-        const randomLineLength = CFG.fans.lineMin + Math.random() * waveLineRange;
-        // 中间点
-        const x = center.x + randomLineLength * Math.sin(angle)
-        const y = center.y + randomLineLength * Math.cos(angle)
-        middle_points.push({
-          x,
-          y
-        });
-        base_points.push({
-          x: center.x + (CFG.fans.lineMin + waveLineRange / 2) * Math.sin(tempAngle),
-          y: center.y + (CFG.fans.lineMin + waveLineRange / 2) * Math.cos(tempAngle)
-        })
-        angle += perAngle;
-        count += 1
+    // const positionDownCurve_x = center.x + CFG.fans.straightLineLength * Math.sin(path_end_angle)
+    // const positionDownCurve_y = center.y + CFG.fans.straightLineLength * Math.cos(path_end_angle)
+
+
+
+    // 生成几个中间点位置
+    let middle_points = [];
+    let base_points = [];
+    const waveLineRange = CFG.fans.lineMax - CFG.fans.lineMin;
+    let tempAngle = path_start_angle + preAngle / 5;
+
+    while (tempAngle < path_end_angle - preAngle / 5) {
+
+      const randomLineLength = CFG.fans.lineMin + Math.random() * waveLineRange;
+      // 中间点
+      const x = center.x + randomLineLength * Math.sin(tempAngle)
+      const y = center.y + randomLineLength * Math.cos(tempAngle)
+      middle_points.push({
+        x,
+        y
+      });
+
+      base_points.push({
+        x: center.x + (CFG.fans.lineMin + waveLineRange / 2) * Math.sin(tempAngle),
+        y: center.y + (CFG.fans.lineMin + waveLineRange / 2) * Math.cos(tempAngle)
+      })
+      tempAngle += CFG.fans.everyWaveAngle;
+
+    }
+
+    if (middle_points.length % 2 !== 0) {
+      middle_points.pop()
+      base_points.pop()
+      if (middle_points.length < 4) { // 这种情况需要重新生成中间点（小于四个） 要不svg路径报错
+        middle_points = [];
+        base_points = [];
+        const waveLineRange = CFG.fans.lineMax - CFG.fans.lineMin;
+        let start = path_start_angle + preAngle / 6;
+        let end = path_end_angle - preAngle / 6
+
+        let perAngle = (end - start) / 4
+
+        let angle = start;
+        let count = 0
+        while (count < 4) {
+          const randomLineLength = CFG.fans.lineMin + Math.random() * waveLineRange;
+          // 中间点
+          const x = center.x + randomLineLength * Math.sin(angle)
+          const y = center.y + randomLineLength * Math.cos(angle)
+          middle_points.push({
+            x,
+            y
+          });
+          base_points.push({
+            x: center.x + (CFG.fans.lineMin + waveLineRange / 2) * Math.sin(tempAngle),
+            y: center.y + (CFG.fans.lineMin + waveLineRange / 2) * Math.cos(tempAngle)
+          })
+          angle += perAngle;
+          count += 1
+        }
       }
     }
+
+
+    // 生成波浪控制点
+    const points_c = middle_points.slice(0, 2);
+    const points_s = middle_points.slice(2, -1);
+    const cmd_c = '' + points_c.map(item => ` ${item.x} ${item.y}`).join(',')
+    const cmd_s = 'S ' + points_s.map(item => ` ${item.x} ${item.y}`).join(',')
+    const waveLine = `${cmd_c} ${cmd_s}`;
+    const d_path = `
+      M${start_point_x} ${start_point_y} 
+      L${positionUp_x} ${positionUp_y} 
+      C${positionUpCurve_x} ${positionUpCurve_y} 
+      ${waveLine},
+      ${positionDown_x} ${positionDown_y}, 
+      L${positionDown_x} ${positionDown_y} 
+      L${end_point_x} ${end_point_y}
+      M${end_point_x} ${end_point_y}
+      C${endCurve_down_x} ${endCurve_down_y} ${endCurve_up_x} ${endCurve_up_y} ${start_point_x} ${start_point_y}
+      `;
+
+    // 计算偏移
+    const middle_angle = (path_end_angle + path_start_angle) / 2;
+    const offset_x = CFG.fans.offset * Math.sin(middle_angle);
+    const offset_y = CFG.fans.offset * Math.cos(middle_angle);
+
+    // 缓存中间变量
+    idPathMap.set(id, {
+      path_start_angle,
+      path_end_angle,
+      start_point_x,
+      start_point_y,
+      end_point_x,
+      end_point_y,
+      endCurve_up_x,
+      endCurve_up_y,
+      endCurve_down_x,
+      endCurve_down_y,
+      positionUp_x,
+      positionUp_y,
+      positionUpCurve_x,
+      positionUpCurve_y,
+      positionDown_x,
+      positionDown_y,
+      offset_x,
+      offset_y,
+      middle_points,
+      base_points
+    })
+
+    // svg.append('path')
+    //   .attr('d', d_path)
+    //   .attr('id', id)
+    //   .attr('class', 'path_art_' + index)
+    //   .attr('style', `fill:url(#${item.pathId}Grad)`)
+    //   .style('transform', `translate(${offset_x}px, ${offset_y}px)`)
+
+    d3.select('.path_art_' + index)
+      .attr('d', d_path)
+      .attr('id', id)
+      .attr('style', `fill:url(#${item.pathId}Grad)`)
+      .style('transform', `translate(${offset_x}px, ${offset_y}px)`)
+
+
+    // arcAngle = arcAngle + ((item.count - 1) / newData.length) * Math.PI * 2
+    arcEndX = CFG.typeCircle.r * Math.sin(arc_start_angle) + center.x;
+    arcEndY = CFG.typeCircle.r * Math.cos(arc_start_angle) + center.y;
+    arcStartX = CFG.typeCircle.r * Math.sin(arc_end_angle) + center.x;
+    arcStartY = CFG.typeCircle.r * Math.cos(arc_end_angle) + center.y
+
+    svg.append('path')
+      .attr('d', `m${arcStartX} ${arcStartY} A${CFG.typeCircle.r},${CFG.typeCircle.r} 0 0,1 ${arcEndX},${arcEndY}`)
+      .attr('id', item.pathId)
+      .attr('stroke', '#ffffff')
+      .attr('stroke-opacity', '0.6')
+      .attr('fill-opacity', 0)
+
+    svg.append('text').append('textPath')
+      .attr('xlink:href', `#${item.pathId}`)
+      .attr('text-anchor', 'middle')
+      .attr('startOffset', '50%')
+      .attr('fill', '#ffffff')
+      .append('tspan')
+      // .attr('dy', () => {
+      //   if(index === 2) {
+      //     return CFG.typeCircle.outTextL + CFG.typeCircle.outTextSiz
+      //   }
+      //   return  -CFG.typeCircle.outTextL
+      // })
+      .attr('dy', -CFG.typeCircle.outTextL)
+      .attr('font-size', CFG.typeCircle.outTextSize)
+      .attr('font-family', 'source-bold')
+      .text(item.zh)
+
+    svg.append('text').append('textPath')
+      .attr('xlink:href', `#${item.pathId}`)
+      .attr('text-anchor', 'middle')
+      .attr('startOffset', '50%')
+      .attr('fill', '#ffffff')
+      .append('tspan')
+      .attr('dy', CFG.typeCircle.innerTextL)
+      // .attr('dy', () => {
+      //   if(index === 2) {
+      //     return -CFG.typeCircle.outTextL
+      //   }
+      //   return  CFG.typeCircle.innerTextL
+      // })
+      .attr('font-size', CFG.typeCircle.innerTextSize)
+      .attr('font-family', 'source-regular')
+      .text(item.en)
+
+    path_start_angle = path_end_angle + preAngle / 2
+    arc_start_angle = arc_end_angle
+
+  });
+
+  // 适用于竖直的渐变
+  function gradient_vertical_using() {
+    // 添加渐变
+    const artGrad = svg.append('defs')
+      .append('linearGradient')
+      .attr('x1', '0%').attr('y1', '100%').attr('x2', '0%').attr('y2', '20%')
+      .attr('id', 'artGrad')
+    artGrad.append('stop')
+      .attr('offset', '0%')
+      .attr('style', 'stop-color:#085158;stop-opacity:70%')
+    artGrad.append('stop')
+      .attr('offset', '100%')
+      .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
+
+    const designGrad = svg.append('defs').append('linearGradient')
+      .attr('id', 'designGrad')
+      .attr('x1', '0%').attr('y1', '0%').attr('x2', '0%').attr('y2', '100%')
+    designGrad.append('stop')
+      .attr('offset', '0%')
+      .attr('style', 'stop-color:#00A93A;stop-opacity:50%')
+    designGrad.append('stop')
+      .attr('offset', '100%')
+      .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
+
+    const humanityGrad = svg.append('defs').append('linearGradient')
+      .attr('id', 'humanityGrad')
+      .attr('x1', '0%').attr('y1', '0%').attr('x2', '70%').attr('y2', '0%')
+    humanityGrad.append('stop')
+      .attr('offset', '0%')
+      .attr('style', 'stop-color:#085158;stop-opacity:60%')
+    humanityGrad.append('stop')
+      .attr('offset', '100%')
+      .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
+  }
+
+  // 20度一个舒服的角度的渐变
+  function gradient_angle20_i_like_using() {
+    const artGrad = svg.append('defs')
+      .append('linearGradient')
+      .attr('x1', '0%').attr('y1', '100%').attr('x2', '0%').attr('y2', '0%')
+      .attr('id', 'artGrad')
+    artGrad.append('stop')
+      .attr('offset', '0%')
+      .attr('style', 'stop-color:#085158;stop-opacity:50%')
+    artGrad.append('stop')
+      .attr('offset', '100%')
+      .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
+
+    const designGrad = svg.append('defs').append('linearGradient')
+      .attr('id', 'designGrad')
+      .attr('x1', '100%').attr('y1', '0%').attr('x2', '0%').attr('y2', '0%')
+    designGrad.append('stop')
+      .attr('offset', '0%')
+      .attr('style', 'stop-color:#00A93A;stop-opacity:50%')
+    designGrad.append('stop')
+      .attr('offset', '100%')
+      .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
+
+    const humanityGrad = svg.append('defs').append('linearGradient')
+      .attr('id', 'humanityGrad')
+      .attr('x1', '0%').attr('y1', '0%').attr('x2', '0%').attr('y2', '100%')
+    humanityGrad.append('stop')
+      .attr('offset', '0%')
+      .attr('style', 'stop-color:#085158;stop-opacity:50%')
+    humanityGrad.append('stop')
+      .attr('offset', '100%')
+      .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
   }
 
 
-  // 生成波浪控制点
-  const points_c = middle_points.slice(0, 2);
-  const points_s = middle_points.slice(2, -1);
-  const cmd_c = '' + points_c.map(item => ` ${item.x} ${item.y}`).join(',')
-  const cmd_s = 'S ' + points_s.map(item => ` ${item.x} ${item.y}`).join(',')
-  const waveLine = `${cmd_c} ${cmd_s}`;
-  const d_path = `
-    M${start_point_x} ${start_point_y} 
-    L${positionUp_x} ${positionUp_y} 
-    C${positionUpCurve_x} ${positionUpCurve_y} 
-    ${waveLine},
-    ${positionDown_x} ${positionDown_y}, 
-    L${positionDown_x} ${positionDown_y} 
-    L${end_point_x} ${end_point_y}
-    M${end_point_x} ${end_point_y}
-    C${endCurve_down_x} ${endCurve_down_y} ${endCurve_up_x} ${endCurve_up_y} ${start_point_x} ${start_point_y}
-    `;
-
-  // 计算偏移
-  const middle_angle = (path_end_angle + path_start_angle) / 2;
-  const offset_x = CFG.fans.offset * Math.sin(middle_angle);
-  const offset_y = CFG.fans.offset * Math.cos(middle_angle);
-
-  // 缓存中间变量
-  idPathMap.set(id, {
-    path_start_angle,
-    path_end_angle,
-    start_point_x,
-    start_point_y,
-    end_point_x,
-    end_point_y,
-    endCurve_up_x,
-    endCurve_up_y,
-    endCurve_down_x,
-    endCurve_down_y,
-    positionUp_x,
-    positionUp_y,
-    positionUpCurve_x,
-    positionUpCurve_y,
-    positionDown_x,
-    positionDown_y,
-    offset_x,
-    offset_y,
-    middle_points,
-    base_points
-  })
+  // 应用渐变
+  gradient_angle20_i_like_using()
 
 
-  console.log('base_points', base_points)
-
-
-  svg.append('path')
-    .attr('d', d_path)
-    .attr('id', id)
-    .attr('class', 'path_art_' + index)
-    .attr('style', `fill:url(#${item.pathId}Grad)`)
-    .style('transform', `translate(${offset_x}px, ${offset_y}px)`)
-
-
-
-
-  // arcAngle = arcAngle + ((item.count - 1) / newData.length) * Math.PI * 2
-  arcEndX = CFG.typeCircle.r * Math.sin(arc_start_angle) + center.x;
-  arcEndY = CFG.typeCircle.r * Math.cos(arc_start_angle) + center.y;
-  arcStartX = CFG.typeCircle.r * Math.sin(arc_end_angle) + center.x;
-  arcStartY = CFG.typeCircle.r * Math.cos(arc_end_angle) + center.y
-
-  svg.append('path')
-    .attr('d', `m${arcStartX} ${arcStartY} A${CFG.typeCircle.r},${CFG.typeCircle.r} 0 0,1 ${arcEndX},${arcEndY}`)
-    .attr('id', item.pathId)
-    .attr('stroke', '#ffffff')
-    .attr('stroke-opacity', '0.6')
-    .attr('fill-opacity', 0)
-
-  svg.append('text').append('textPath')
-    .attr('xlink:href', `#${item.pathId}`)
-    .attr('text-anchor', 'middle')
-    .attr('startOffset', '50%')
-    .attr('fill', '#ffffff')
-    .append('tspan')
-    // .attr('dy', () => {
-    //   if(index === 2) {
-    //     return CFG.typeCircle.outTextL + CFG.typeCircle.outTextSiz
-    //   }
-    //   return  -CFG.typeCircle.outTextL
-    // })
-    .attr('dy', -CFG.typeCircle.outTextL)
-    .attr('font-size', CFG.typeCircle.outTextSize)
-    .attr('font-family', 'source-bold')
-    .text(item.zh)
-
-  svg.append('text').append('textPath')
-    .attr('xlink:href', `#${item.pathId}`)
-    .attr('text-anchor', 'middle')
-    .attr('startOffset', '50%')
-    .attr('fill', '#ffffff')
-    .append('tspan')
-    .attr('dy', CFG.typeCircle.innerTextL)
-    // .attr('dy', () => {
-    //   if(index === 2) {
-    //     return -CFG.typeCircle.outTextL
-    //   }
-    //   return  CFG.typeCircle.innerTextL
-    // })
-    .attr('font-size', CFG.typeCircle.innerTextSize)
-    .attr('font-family', 'source-regular')
-    .text(item.en)
-
-  path_start_angle = path_end_angle + preAngle / 2
-  arc_start_angle = arc_end_angle
-
-});
-
-// 适用于竖直的渐变
-function gradient_vertical_using() {
-  // 添加渐变
-  const artGrad = svg.append('defs')
-    .append('linearGradient')
-    .attr('x1', '0%').attr('y1', '100%').attr('x2', '0%').attr('y2', '20%')
-    .attr('id', 'artGrad')
-  artGrad.append('stop')
-    .attr('offset', '0%')
-    .attr('style', 'stop-color:#085158;stop-opacity:70%')
-  artGrad.append('stop')
-    .attr('offset', '100%')
-    .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
-
-  const designGrad = svg.append('defs').append('linearGradient')
-    .attr('id', 'designGrad')
-    .attr('x1', '0%').attr('y1', '0%').attr('x2', '0%').attr('y2', '100%')
-  designGrad.append('stop')
-    .attr('offset', '0%')
-    .attr('style', 'stop-color:#00A93A;stop-opacity:50%')
-  designGrad.append('stop')
-    .attr('offset', '100%')
-    .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
-
-  const humanityGrad = svg.append('defs').append('linearGradient')
-    .attr('id', 'humanityGrad')
-    .attr('x1', '0%').attr('y1', '0%').attr('x2', '70%').attr('y2', '0%')
-  humanityGrad.append('stop')
-    .attr('offset', '0%')
-    .attr('style', 'stop-color:#085158;stop-opacity:60%')
-  humanityGrad.append('stop')
-    .attr('offset', '100%')
-    .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
 }
-
-// 20度一个舒服的角度的渐变
-function gradient_angle20_i_like_using() {
-  const artGrad = svg.append('defs')
-    .append('linearGradient')
-    .attr('x1', '0%').attr('y1', '100%').attr('x2', '0%').attr('y2', '0%')
-    .attr('id', 'artGrad')
-  artGrad.append('stop')
-    .attr('offset', '0%')
-    .attr('style', 'stop-color:#085158;stop-opacity:50%')
-  artGrad.append('stop')
-    .attr('offset', '100%')
-    .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
-
-  const designGrad = svg.append('defs').append('linearGradient')
-    .attr('id', 'designGrad')
-    .attr('x1', '100%').attr('y1', '0%').attr('x2', '0%').attr('y2', '0%')
-  designGrad.append('stop')
-    .attr('offset', '0%')
-    .attr('style', 'stop-color:#00A93A;stop-opacity:50%')
-  designGrad.append('stop')
-    .attr('offset', '100%')
-    .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
-
-  const humanityGrad = svg.append('defs').append('linearGradient')
-    .attr('id', 'humanityGrad')
-    .attr('x1', '0%').attr('y1', '0%').attr('x2', '0%').attr('y2', '100%')
-  humanityGrad.append('stop')
-    .attr('offset', '0%')
-    .attr('style', 'stop-color:#085158;stop-opacity:50%')
-  humanityGrad.append('stop')
-    .attr('offset', '100%')
-    .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
-}
-
-
-gradient_angle20_i_like_using()
-
-
-
-// ===================
-
 
 
 
@@ -395,152 +404,179 @@ svg
 svg.append('circle')
   .attr('r', CFG.outerCircle.r)
   .attr('stroke', CFG.outerCircle.strokeColor)
-  .attr('stroke-opacity', CFG.outerCircle.opacity)
-  .attr('fill-opacity', 0)
   .attr('cx', center.x)
   .attr('cy', center.y)
+  .attr('fill-opacity', 0)
+  .attr('stroke-opacity', 0)
+  .transition()
+  .duration(CFG.animation.initMoving)
+  .attr('stroke-opacity', 0)
+  .transition()
+  .duration(CFG.animation.initMoving).ease(d3.easeSin)
+  .attr('stroke-opacity', CFG.outerCircle.opacity)
+
 
 svg.append('circle')
   .attr('r', CFG.innerCircle.r)
   .attr('stroke', CFG.innerCircle.strokeColor)
-  .attr('stroke-opacity', CFG.outerCircle.opacity)
   .attr('fill-opacity', 0)
   .attr('cx', center.x)
   .attr('cy', center.y)
-
-
+  .attr('stroke-opacity', 0)
+  .transition()
+  .duration(CFG.animation.initMoving)
+  .attr('stroke-opacity', 0)
+  .transition()
+  .duration(CFG.animation.initMoving).ease(d3.easeSin)
+  .attr('stroke-opacity', CFG.outerCircle.opacity)
 
 //添加分组 
 const groups = svg.selectAll('.indicator_circle')
   .data(newData)
   .enter().append('g')
-
-// 绘制指示器
-groups.append('circle')
-  .attr('class', 'indicator_circle')
-  .attr('r', CFG.indicator.r)
-  .attr('cx', d => {
-    return d.startPosition.x
-  })
-  .attr('cy', d => {
-    return d.startPosition.y
-  })
-  .attr('fill', CFG.indicator.fill)
-  .attr('fill-opacity', CFG.indicator.opacity)
-  .attr('style', `-webkit-filter:blur(${CFG.indicator.blur}px);filter: blur(${CFG.indicator.blur}px)`)
-
-// 隐藏的辅助矩形
-// 用来hover
-const rect_height = 20
-groups.append('rect')
-  .attr('x', d => {
-    return d.startPosition.x
-  })
-  .attr('y', d => {
-    return d.startPosition.y - rect_height / 2
-  })
-  .attr('width', d => {
-
-    const length = Math.max(d.practiceDatas.length, d.selectDatas.length)
-    return length * (CFG.ball.size_min + CFG.ball.offset_everyTwoBalls);
-  })
-  .attr('height', d => {
-    return rect_height;
-  })
-  .attr('fill', 'white')
-  .attr('opacity', 0)
-  .style('transform', d => {
-    return `rotate(${-d.sAngle + Math.PI / 2}rad)`
-  })
-  .style('transform-origin', d => {
-    return `${d.startPosition.x}px ${d.startPosition.y}px`
-  })
+// 绘制辅助图形
+function drawAsists() {
 
 
+  // 隐藏的辅助矩形
+  // 用来hover
+  const rect_height = 20
+  groups.append('rect')
+    .attr('x', d => {
+      return d.startPosition.x
+    })
+    .attr('y', d => {
+      return d.startPosition.y - rect_height / 2
+    })
+    .attr('width', d => {
 
-// 绘制label文字路径（文字向圆心需要）
-groups.append('path')
-  .attr('d', d => {
-    const cr = CFG.innerCircle.r - (CFG.indicator.r + 2 * CFG.indicator.blur)
-    const startX = cr * Math.sin(d.sAngle) + center.x
-    const startY = cr * Math.cos(d.sAngle) + center.y
-    if (d.sAngle >= 0 && d.sAngle <= Math.PI) {
-      return `M ${center.x} ${center.y} L ${startX} ${startY}`
-    }
-    return `M ${startX} ${startY} L ${center.x} ${center.y}`
-  })
-  .attr('id', (d, i) => `lable${i}`)
-
-groups.append('text').append('textPath')
-  .attr('xlink:href', (d, i) => `#lable${i}`)
-  .attr('fill', CFG.dataText.fill)
-  .attr('startOffset', d => {
-    if (d.sAngle >= 0 && d.sAngle <= Math.PI) {
-      return '100%'
-    }
-    return '0%'
-  })
-  .attr('text-anchor', d => {
-    if (d.sAngle >= 0 && d.sAngle <= Math.PI) {
-      return 'end'
-    }
-    return 'start'
-  })
-  .attr('fill-opacity', CFG.dataText.opacity)
-  .append('tspan')
-  .attr('dy', CFG.dataText.fontSize / 2)
-  .attr('font-size', CFG.dataText.fontSize)
-  .attr('font-family', 'source-regular')
-  .attr('stroke-width', 0.2)
-  .attr('stroke-opacity', 0)
-  .text(d => d.name)
-  .attr('class', 'text_label')
-
-
-
-groups.on('mouseenter', e => {
-  const {
-    target
-  } = e;
-  if (!target) return;
-  const elem = d3.select(target)
-  d3.selectAll('.text_label')
-    .attr('font-size', CFG.dataText.fontSize)
-    .attr('stroke-opacity', 0)
-    .attr('fill-opacity', CFG.dataText.opacity)
-
-
-  d3.selectAll('.text_value')
+      const length = Math.max(d.practiceDatas.length, d.selectDatas.length)
+      return length * (CFG.ball.size_min + CFG.ball.offset_everyTwoBalls);
+    })
+    .attr('height', d => {
+      return rect_height;
+    })
+    .attr('fill', 'white')
     .attr('opacity', 0)
-  elem.select('.text_label')
-    .transition()
-    .duration(200)
-    .attr('font-size', CFG.dataText.fontSize + CFG.dataText.biggerSize)
-    // .attr('font-weight', 900)
-    .attr('stroke-opacity', 1)
-    .attr('fill-opacity', 1)
+    .style('transform', d => {
+      return `rotate(${-d.sAngle + Math.PI / 2}rad)`
+    })
+    .style('transform-origin', d => {
+      return `${d.startPosition.x}px ${d.startPosition.y}px`
+    })
+}
 
 
-  elem.selectAll('.text_value')
-    .transition()
-    .duration(200)
-    .attr('opacity', 1)
-})
-groups.on('mouseleave', e => {
-  const {
-    target
-  } = e;
-  if (!target) return;
-  const elem = d3.select(target)
 
-  elem.select('.text_label')
-    .attr('font-size', CFG.dataText.fontSize)
-    .attr('stroke-opacity', 0)
+function drawIndicator() {
+  // 绘制指示器
+  groups.append('circle')
+    .attr('class', 'indicator_circle')
+    .attr('r', CFG.indicator.r)
+    .attr('cx', d => {
+      return d.startPosition.x
+    })
+    .attr('cy', d => {
+      return d.startPosition.y
+    })
+    .attr('fill', CFG.indicator.fill)
+    .attr('fill-opacity', CFG.indicator.opacity)
+    .attr('style', `-webkit-filter:blur(${CFG.indicator.blur}px);filter: blur(${CFG.indicator.blur}px)`)
+
+
+}
+
+
+function drawCenterTitle() {
+  // 绘制label文字路径（文字向圆心需要）
+  groups.append('path')
+    .attr('d', d => {
+      const cr = CFG.innerCircle.r - (CFG.indicator.r + 2 * CFG.indicator.blur)
+      const startX = cr * Math.sin(d.sAngle) + center.x
+      const startY = cr * Math.cos(d.sAngle) + center.y
+      if (d.sAngle >= 0 && d.sAngle <= Math.PI) {
+        return `M ${center.x} ${center.y} L ${startX} ${startY}`
+      }
+      return `M ${startX} ${startY} L ${center.x} ${center.y}`
+    })
+    .attr('id', (d, i) => `lable${i}`)
+
+  groups.append('text').append('textPath')
+    .attr('xlink:href', (d, i) => `#lable${i}`)
+    .attr('fill', CFG.dataText.fill)
+    .attr('startOffset', d => {
+      if (d.sAngle >= 0 && d.sAngle <= Math.PI) {
+        return '100%'
+      }
+      return '0%'
+    })
+    .attr('text-anchor', d => {
+      if (d.sAngle >= 0 && d.sAngle <= Math.PI) {
+        return 'end'
+      }
+      return 'start'
+    })
     .attr('fill-opacity', CFG.dataText.opacity)
+    .append('tspan')
+    .attr('dy', CFG.dataText.fontSize / 2)
+    .attr('font-size', CFG.dataText.fontSize)
+    .attr('font-family', 'source-regular')
+    .attr('stroke-width', 0.2)
+    .attr('stroke-opacity', 0)
+    .text(d => d.name)
+    .attr('class', 'text_label')
 
-  elem.selectAll('.text_value')
-    .attr('opacity', 0)
-})
+}
+
+
+function addInteraction() {
+  groups.on('mouseenter', e => {
+    const {
+      target
+    } = e;
+    if (!target) return;
+    const elem = d3.select(target)
+    d3.selectAll('.text_label')
+      .attr('font-size', CFG.dataText.fontSize)
+      .attr('stroke-opacity', 0)
+      .attr('fill-opacity', CFG.dataText.opacity)
+
+
+    d3.selectAll('.text_value')
+      .attr('opacity', 0)
+    elem.select('.text_label')
+      .transition()
+      .duration(200)
+      .attr('font-size', CFG.dataText.fontSize + CFG.dataText.biggerSize)
+      // .attr('font-weight', 900)
+      .attr('stroke-opacity', 1)
+      .attr('fill-opacity', 1)
+
+
+    elem.selectAll('.text_value')
+      .transition()
+      .duration(200)
+      .attr('opacity', 1)
+  })
+  groups.on('mouseleave', e => {
+    const {
+      target
+    } = e;
+    if (!target) return;
+    const elem = d3.select(target)
+
+    elem.select('.text_label')
+      .attr('font-size', CFG.dataText.fontSize)
+      .attr('stroke-opacity', 0)
+      .attr('fill-opacity', CFG.dataText.opacity)
+
+    elem.selectAll('.text_value')
+      .attr('opacity', 0)
+  })
+
+
+}
+
 
 
 
@@ -565,15 +601,11 @@ newData.forEach((d, i) => {
     .domain([0, selectDatas.length])
     .range([ball_size_min, ball_size_max]);
 
-
-
   const offsetStartX = offsetStart * Math.sin(sAngle)
   const offsetStartY = offsetStart * Math.cos(sAngle)
 
   const offsetEveryX = offsetEvery * Math.sin(sAngle)
   const offsetEveryY = offsetEvery * Math.cos(sAngle)
-
-
 
 
   // 选修相关
@@ -594,6 +626,18 @@ newData.forEach((d, i) => {
     .attr('r', (d, i) => {
       return scale_select(selectDatas.length - i)
     })
+    .attr('fill', (d, i) => {
+      return gradient_select[i]
+    })
+    .attr('cx', (d, i) => {
+
+      return center.x + offsetStartX + offsetEveryX * i
+    })
+    .attr('cy', (d, i) => {
+      return center.y + offsetStartY + offsetEveryY * i
+    })
+    .transition()
+    .duration(CFG.animation.initMoving)
     .attr('cx', (d, i) => {
 
       return select_start_x + offsetStartX + offsetEveryX * i
@@ -601,9 +645,7 @@ newData.forEach((d, i) => {
     .attr('cy', (d, i) => {
       return select_start_y + offsetStartY + offsetEveryY * i
     })
-    .attr('fill', (d, i) => {
-      return gradient_select[i]
-    })
+
 
   // 实践相关
   const practice_off_angle = Math.PI + select_off_angle;
@@ -631,6 +673,14 @@ newData.forEach((d, i) => {
     })
     .attr('cx', (d, i) => {
 
+      return center.x + offsetStartX + offsetEveryX * i
+    })
+    .attr('cy', (d, i) => {
+      return center.y + offsetStartY + offsetEveryY * i
+    })
+    .transition()
+    .duration(CFG.animation.initMoving)
+    .attr('cx', (d, i) => {
       return practice_start_x + offsetStartX + offsetEveryX * i
     })
     .attr('cy', (d, i) => {
@@ -643,85 +693,112 @@ newData.forEach((d, i) => {
 });
 
 
-//绘制实践分数数值
-// 绘制实践垂直放射线的路径
-groups.append('path')
-  .attr('d', d => {
-    const sAngle = d.sAngle
-    const practice_off_angle = Math.PI + Math.PI / 2 + sAngle;
-    const practice_start_x = d.startPosition.x + Math.sin(practice_off_angle) * betweenBarsOffset;
-    const offsetStartX = offsetStart * Math.sin(sAngle)
-    const offsetEveryX = offsetEvery * Math.sin(sAngle)
-    const practice_start_y = d.startPosition.y + Math.cos(practice_off_angle) * betweenBarsOffset;
-    const offsetStartY = offsetStart * Math.cos(sAngle)
-    const offsetEveryY = offsetEvery * Math.cos(sAngle)
-    const x = practice_start_x + offsetStartX + offsetEveryX * (d.practiceDatas.length + 1)
-    const y = practice_start_y + offsetStartY + offsetEveryY * (d.practiceDatas.length + 1)
-    const cl = 8 * CFG.indicator.r
-    const cx1 = x - cl * Math.cos(sAngle);
-    const cy1 = y + cl * Math.sin(sAngle);
-    const cx2 = x + cl * Math.cos(sAngle);
-    const cy2 = y - cl * Math.sin(sAngle);
-    if (d.sAngle >= Math.PI / 2 && d.sAngle <= Math.PI * 3 / 2) {
-      return `M ${cx2} ${cy2} L ${cx1} ${cy1}`
-    }
-    return `M ${cx1} ${cy1} L ${cx2} ${cy2}`
-  })
-  .attr('id', (d, i) => `practice${i}`)
-
-groups.append('text').append('textPath')
-  .attr('xlink:href', (d, i) => `#practice${i}`)
-  .attr('text-anchor', 'middle')
-  .attr('startOffset', '50%')
-  .attr('fill', CFG.value.fill)
-  .attr('font-size', CFG.value.fontSize)
-  .attr('font-family', 'source-bold')
-  .text(d => d.practice)
-  .attr('class', 'text_value')
-  .attr('opacity', 0)
 
 
+function drawText() {
 
-//绘制选修分数数值
-groups.append('path')
-  .attr('d', d => {
-    const sAngle = d.sAngle
-    const select_off_angle = Math.PI / 2 + sAngle;
-    const select_start_x = d.startPosition.x + Math.sin(select_off_angle) * betweenBarsOffset;
-    const offsetStartX = offsetStart * Math.sin(sAngle)
-    const offsetEveryX = offsetEvery * Math.sin(sAngle)
-    const select_start_y = d.startPosition.y + Math.cos(select_off_angle) * betweenBarsOffset;
-    const offsetStartY = offsetStart * Math.cos(sAngle)
-    const offsetEveryY = offsetEvery * Math.cos(sAngle)
-    const x = select_start_x + offsetStartX + offsetEveryX * (d.selectDatas.length + 1)
-    const y = select_start_y + offsetStartY + offsetEveryY * (d.selectDatas.length + 1)
-    const cl = 8 * CFG.indicator.r
-    const cx1 = x - cl * Math.cos(sAngle);
-    const cy1 = y + cl * Math.sin(sAngle);
-    const cx2 = x + cl * Math.cos(sAngle);
-    const cy2 = y - cl * Math.sin(sAngle);
-    if (d.sAngle >= Math.PI / 2 && d.sAngle <= Math.PI * 3 / 2) {
-      return `M ${cx2} ${cy2} L ${cx1} ${cy1}`
-    }
-    return `M ${cx1} ${cy1} L ${cx2} ${cy2}`
-  })
-  .attr('id', (d, i) => `elect${i}`)
+  // 绘制实践分数数值
+  // 绘制实践垂直放射线的路径
+  groups.append('path')
+    .attr('d', d => {
+      const sAngle = d.sAngle
+      const practice_off_angle = Math.PI + Math.PI / 2 + sAngle;
+      const practice_start_x = d.startPosition.x + Math.sin(practice_off_angle) * betweenBarsOffset;
+      const offsetStartX = offsetStart * Math.sin(sAngle)
+      const offsetEveryX = offsetEvery * Math.sin(sAngle)
+      const practice_start_y = d.startPosition.y + Math.cos(practice_off_angle) * betweenBarsOffset;
+      const offsetStartY = offsetStart * Math.cos(sAngle)
+      const offsetEveryY = offsetEvery * Math.cos(sAngle)
+      const x = practice_start_x + offsetStartX + offsetEveryX * (d.practiceDatas.length + 1)
+      const y = practice_start_y + offsetStartY + offsetEveryY * (d.practiceDatas.length + 1)
+      const cl = 8 * CFG.indicator.r
+      const cx1 = x - cl * Math.cos(sAngle);
+      const cy1 = y + cl * Math.sin(sAngle);
+      const cx2 = x + cl * Math.cos(sAngle);
+      const cy2 = y - cl * Math.sin(sAngle);
+      if (d.sAngle >= Math.PI / 2 && d.sAngle <= Math.PI * 3 / 2) {
+        return `M ${cx2} ${cy2} L ${cx1} ${cy1}`
+      }
+      return `M ${cx1} ${cy1} L ${cx2} ${cy2}`
+    })
+    .attr('id', (d, i) => `practice${i}`)
 
-groups.append('text').append('textPath')
-  .attr('xlink:href', (d, i) => `#elect${i}`)
-  .attr('text-anchor', 'middle')
-  .attr('startOffset', '50%')
-  .attr('fill', CFG.value.fill)
-  .attr('font-size', CFG.value.fontSize)
-  .attr('font-family', 'source-bold')
-  .text(d => d.select)
-  .attr('class', 'text_value')
-  .attr('opacity', 0)
+  groups.append('text').append('textPath')
+    .attr('xlink:href', (d, i) => `#practice${i}`)
+    .attr('text-anchor', 'middle')
+    .attr('startOffset', '50%')
+    .attr('fill', CFG.value.fill)
+    .attr('font-size', CFG.value.fontSize)
+    .attr('font-family', 'source-bold')
+    .text(d => d.practice)
+    .attr('class', 'text_value')
+    .attr('opacity', 0)
+
+  //绘制选修分数数值
+  groups.append('path')
+    .attr('d', d => {
+      const sAngle = d.sAngle
+      const select_off_angle = Math.PI / 2 + sAngle;
+      const select_start_x = d.startPosition.x + Math.sin(select_off_angle) * betweenBarsOffset;
+      const offsetStartX = offsetStart * Math.sin(sAngle)
+      const offsetEveryX = offsetEvery * Math.sin(sAngle)
+      const select_start_y = d.startPosition.y + Math.cos(select_off_angle) * betweenBarsOffset;
+      const offsetStartY = offsetStart * Math.cos(sAngle)
+      const offsetEveryY = offsetEvery * Math.cos(sAngle)
+      const x = select_start_x + offsetStartX + offsetEveryX * (d.selectDatas.length + 1)
+      const y = select_start_y + offsetStartY + offsetEveryY * (d.selectDatas.length + 1)
+      const cl = 8 * CFG.indicator.r
+      const cx1 = x - cl * Math.cos(sAngle);
+      const cy1 = y + cl * Math.sin(sAngle);
+      const cx2 = x + cl * Math.cos(sAngle);
+      const cy2 = y - cl * Math.sin(sAngle);
+      if (d.sAngle >= Math.PI / 2 && d.sAngle <= Math.PI * 3 / 2) {
+        return `M ${cx2} ${cy2} L ${cx1} ${cy1}`
+      }
+      return `M ${cx1} ${cy1} L ${cx2} ${cy2}`
+    })
+    .attr('id', (d, i) => `elect${i}`)
+
+  groups.append('text').append('textPath')
+    .attr('xlink:href', (d, i) => `#elect${i}`)
+    .attr('text-anchor', 'middle')
+    .attr('startOffset', '50%')
+    .attr('fill', CFG.value.fill)
+    .attr('font-size', CFG.value.fontSize)
+    .attr('font-family', 'source-bold')
+    .text(d => d.select)
+    .attr('class', 'text_value')
+    .attr('opacity', 0)
+
+}
 
 
-d3.select('body')
-  .append('div')
-  .attr('style', `width:${CFG.legend.width}px;margin:0 auto`)
-  .append('img')
-  .attr('src', './asserts/legend.png')
-  .attr('width', '100%')
+function drawLegend() {
+  d3.select('body')
+    .append('div')
+    .attr('style', `width:${CFG.legend.width}px;margin:0 auto`)
+    .append('img')
+    .attr('src', './asserts/legend.png')
+    .attr('width', '100%')
+}
+
+// 脚本开始
+// 绘制其他部分
+setTimeout(() => {
+
+  drawAsists();
+  drawCenterTitle();
+
+  drawIndicator();
+
+  addInteraction();
+
+  drawText();
+  drawLegend();
+  drawArea();
+
+
+  // 启动动画 animation.js
+  start();
+
+}, CFG.animation.initMoving + 100)
