@@ -1,5 +1,9 @@
 const R = 140
 const CFG = {
+  animation:{
+    waveInterval: 2500, // 动画循环的时间
+  },
+
   container: {
     width: window.innerWidth,
     height: window.innerHeight,
@@ -32,7 +36,7 @@ const CFG = {
   },
 
   // 起始角度
-  startAngle: (36 / 360) * Math.PI * 2,
+  startAngle: -(15 / 360) * Math.PI * 2,
 
   // 指示器
   indicator: {

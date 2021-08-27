@@ -89,8 +89,12 @@ const tyepData = [{
 // 起始角度
 let path_start_angle = CFG.startAngle - preAngle / 2 + preAngle / 4;
 let arc_start_angle = CFG.startAngle - preAngle / 2
+
+const idPathMap = new Map();
 // 弧形路径文字
 tyepData.forEach((item, index) => {
+
+  const id = `wavePath${index}`;
 
   const path_end_angle = path_start_angle + preAngle * item.count - preAngle / 2;
   const arc_end_angle = arc_start_angle + preAngle * item.count;
@@ -125,8 +129,11 @@ tyepData.forEach((item, index) => {
   // const positionDownCurve_x = center.x + CFG.fans.straightLineLength * Math.sin(path_end_angle)
   // const positionDownCurve_y = center.y + CFG.fans.straightLineLength * Math.cos(path_end_angle)
 
+
+
   // 生成几个中间点位置
   let middle_points = [];
+  let base_points = [];
   const waveLineRange = CFG.fans.lineMax - CFG.fans.lineMin;
   let tempAngle = path_start_angle + preAngle / 5;
 
@@ -140,14 +147,21 @@ tyepData.forEach((item, index) => {
       x,
       y
     });
+
+    base_points.push({
+      x: center.x + (CFG.fans.lineMin + waveLineRange / 2) * Math.sin(tempAngle),
+      y: center.y + (CFG.fans.lineMin + waveLineRange / 2) * Math.cos(tempAngle)
+    })
     tempAngle += CFG.fans.everyWaveAngle;
 
   }
 
   if (middle_points.length % 2 !== 0) {
     middle_points.pop()
+    base_points.pop()
     if (middle_points.length < 4) { // 这种情况需要重新生成中间点（小于四个） 要不svg路径报错
       middle_points = [];
+      base_points = [];
       const waveLineRange = CFG.fans.lineMax - CFG.fans.lineMin;
       let start = path_start_angle + preAngle / 6;
       let end = path_end_angle - preAngle / 6
@@ -165,6 +179,10 @@ tyepData.forEach((item, index) => {
           x,
           y
         });
+        base_points.push({
+          x: center.x + (CFG.fans.lineMin + waveLineRange / 2) * Math.sin(tempAngle),
+          y: center.y + (CFG.fans.lineMin + waveLineRange / 2) * Math.cos(tempAngle)
+        })
         angle += perAngle;
         count += 1
       }
@@ -195,10 +213,37 @@ tyepData.forEach((item, index) => {
   const offset_x = CFG.fans.offset * Math.sin(middle_angle);
   const offset_y = CFG.fans.offset * Math.cos(middle_angle);
 
+  // 缓存中间变量
+  idPathMap.set(id, {
+    path_start_angle,
+    path_end_angle,
+    start_point_x,
+    start_point_y,
+    end_point_x,
+    end_point_y,
+    endCurve_up_x,
+    endCurve_up_y,
+    endCurve_down_x,
+    endCurve_down_y,
+    positionUp_x,
+    positionUp_y,
+    positionUpCurve_x,
+    positionUpCurve_y,
+    positionDown_x,
+    positionDown_y,
+    offset_x,
+    offset_y,
+    middle_points,
+    base_points
+  })
+
+
+  console.log('base_points', base_points)
 
 
   svg.append('path')
     .attr('d', d_path)
+    .attr('id', id)
     .attr('class', 'path_art_' + index)
     .attr('style', `fill:url(#${item.pathId}Grad)`)
     .style('transform', `translate(${offset_x}px, ${offset_y}px)`)
@@ -231,7 +276,7 @@ tyepData.forEach((item, index) => {
     //   }
     //   return  -CFG.typeCircle.outTextL
     // })
-    .attr('dy',  -CFG.typeCircle.outTextL)
+    .attr('dy', -CFG.typeCircle.outTextL)
     .attr('font-size', CFG.typeCircle.outTextSize)
     .attr('font-family', 'source-bold')
     .text(item.zh)
@@ -258,37 +303,77 @@ tyepData.forEach((item, index) => {
 
 });
 
-// 添加渐变
-const artGrad = svg.append('defs')
-  .append('linearGradient')
-  .attr('x1', '0%').attr('y1', '100%').attr('x2', '0%').attr('y2', '20%')
-  .attr('id', 'artGrad')
-artGrad.append('stop')
-  .attr('offset', '0%')
-  .attr('style', 'stop-color:#085158;stop-opacity:70%')
-artGrad.append('stop')
-  .attr('offset', '100%')
-  .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
+// 适用于竖直的渐变
+function gradient_vertical_using() {
+  // 添加渐变
+  const artGrad = svg.append('defs')
+    .append('linearGradient')
+    .attr('x1', '0%').attr('y1', '100%').attr('x2', '0%').attr('y2', '20%')
+    .attr('id', 'artGrad')
+  artGrad.append('stop')
+    .attr('offset', '0%')
+    .attr('style', 'stop-color:#085158;stop-opacity:70%')
+  artGrad.append('stop')
+    .attr('offset', '100%')
+    .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
 
-const designGrad = svg.append('defs').append('linearGradient')
-  .attr('id', 'designGrad')
-  .attr('x1', '0%').attr('y1', '0%').attr('x2', '0%').attr('y2', '100%')
-designGrad.append('stop')
-  .attr('offset', '0%')
-  .attr('style', 'stop-color:#00A93A;stop-opacity:50%')
-designGrad.append('stop')
-  .attr('offset', '100%')
-  .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
+  const designGrad = svg.append('defs').append('linearGradient')
+    .attr('id', 'designGrad')
+    .attr('x1', '0%').attr('y1', '0%').attr('x2', '0%').attr('y2', '100%')
+  designGrad.append('stop')
+    .attr('offset', '0%')
+    .attr('style', 'stop-color:#00A93A;stop-opacity:50%')
+  designGrad.append('stop')
+    .attr('offset', '100%')
+    .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
 
-const humanityGrad = svg.append('defs').append('linearGradient')
-  .attr('id', 'humanityGrad')
-  .attr('x1', '0%').attr('y1', '0%').attr('x2', '70%').attr('y2', '0%')
-humanityGrad.append('stop')
-  .attr('offset', '0%')
-  .attr('style', 'stop-color:#085158;stop-opacity:60%')
-humanityGrad.append('stop')
-  .attr('offset', '100%')
-  .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
+  const humanityGrad = svg.append('defs').append('linearGradient')
+    .attr('id', 'humanityGrad')
+    .attr('x1', '0%').attr('y1', '0%').attr('x2', '70%').attr('y2', '0%')
+  humanityGrad.append('stop')
+    .attr('offset', '0%')
+    .attr('style', 'stop-color:#085158;stop-opacity:60%')
+  humanityGrad.append('stop')
+    .attr('offset', '100%')
+    .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
+}
+
+// 20度一个舒服的角度的渐变
+function gradient_angle20_i_like_using() {
+  const artGrad = svg.append('defs')
+    .append('linearGradient')
+    .attr('x1', '0%').attr('y1', '100%').attr('x2', '0%').attr('y2', '0%')
+    .attr('id', 'artGrad')
+  artGrad.append('stop')
+    .attr('offset', '0%')
+    .attr('style', 'stop-color:#085158;stop-opacity:50%')
+  artGrad.append('stop')
+    .attr('offset', '100%')
+    .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
+
+  const designGrad = svg.append('defs').append('linearGradient')
+    .attr('id', 'designGrad')
+    .attr('x1', '100%').attr('y1', '0%').attr('x2', '0%').attr('y2', '0%')
+  designGrad.append('stop')
+    .attr('offset', '0%')
+    .attr('style', 'stop-color:#00A93A;stop-opacity:50%')
+  designGrad.append('stop')
+    .attr('offset', '100%')
+    .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
+
+  const humanityGrad = svg.append('defs').append('linearGradient')
+    .attr('id', 'humanityGrad')
+    .attr('x1', '0%').attr('y1', '0%').attr('x2', '0%').attr('y2', '100%')
+  humanityGrad.append('stop')
+    .attr('offset', '0%')
+    .attr('style', 'stop-color:#085158;stop-opacity:50%')
+  humanityGrad.append('stop')
+    .attr('offset', '100%')
+    .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
+}
+
+
+gradient_angle20_i_like_using()
 
 
 
