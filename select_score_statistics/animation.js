@@ -124,9 +124,6 @@ function waveAnimation() {
       }
     }
 
-    // idPathMap.get(id).middle_points = middle_points
-
-
     // 生成波浪控制点
     const points_c = middle_points.slice(0, 2);
     const points_s = middle_points.slice(2, -1);
@@ -146,8 +143,8 @@ function waveAnimation() {
     `;
 
     d3.select('#' + id)
-      .transition()
-      .duration(CFG.animation.waveInterval + 200)
+      .transition().ease(d3.easeLinear)
+      .duration(CFG.animation.waveInterval + 400)
       .attr('d', d_path)
 
     flag = !flag

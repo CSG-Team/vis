@@ -1,7 +1,7 @@
 const R = 140
 const CFG = {
   animation:{
-    waveInterval: 4000,
+    waveInterval: 2500, // 动画循环的时间
   },
 
   container: {
