@@ -36,7 +36,7 @@ const CFG = {
   },
 
   // 起始角度
-  startAngle: (36 / 360) * Math.PI * 2,
+  startAngle: -(15 / 360) * Math.PI * 2,
 
   // 指示器
   indicator: {

@@ -161,7 +161,7 @@ tyepData.forEach((item, index) => {
     base_points.pop()
     if (middle_points.length < 4) { // 这种情况需要重新生成中间点（小于四个） 要不svg路径报错
       middle_points = [];
-      base_points=[];
+      base_points = [];
       const waveLineRange = CFG.fans.lineMax - CFG.fans.lineMin;
       let start = path_start_angle + preAngle / 6;
       let end = path_end_angle - preAngle / 6
@@ -303,37 +303,77 @@ tyepData.forEach((item, index) => {
 
 });
 
-// 添加渐变
-const artGrad = svg.append('defs')
-  .append('linearGradient')
-  .attr('x1', '0%').attr('y1', '100%').attr('x2', '0%').attr('y2', '20%')
-  .attr('id', 'artGrad')
-artGrad.append('stop')
-  .attr('offset', '0%')
-  .attr('style', 'stop-color:#085158;stop-opacity:70%')
-artGrad.append('stop')
-  .attr('offset', '100%')
-  .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
+// 适用于竖直的渐变
+function gradient_vertical_using() {
+  // 添加渐变
+  const artGrad = svg.append('defs')
+    .append('linearGradient')
+    .attr('x1', '0%').attr('y1', '100%').attr('x2', '0%').attr('y2', '20%')
+    .attr('id', 'artGrad')
+  artGrad.append('stop')
+    .attr('offset', '0%')
+    .attr('style', 'stop-color:#085158;stop-opacity:70%')
+  artGrad.append('stop')
+    .attr('offset', '100%')
+    .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
 
-const designGrad = svg.append('defs').append('linearGradient')
-  .attr('id', 'designGrad')
-  .attr('x1', '0%').attr('y1', '0%').attr('x2', '0%').attr('y2', '100%')
-designGrad.append('stop')
-  .attr('offset', '0%')
-  .attr('style', 'stop-color:#00A93A;stop-opacity:50%')
-designGrad.append('stop')
-  .attr('offset', '100%')
-  .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
+  const designGrad = svg.append('defs').append('linearGradient')
+    .attr('id', 'designGrad')
+    .attr('x1', '0%').attr('y1', '0%').attr('x2', '0%').attr('y2', '100%')
+  designGrad.append('stop')
+    .attr('offset', '0%')
+    .attr('style', 'stop-color:#00A93A;stop-opacity:50%')
+  designGrad.append('stop')
+    .attr('offset', '100%')
+    .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
 
-const humanityGrad = svg.append('defs').append('linearGradient')
-  .attr('id', 'humanityGrad')
-  .attr('x1', '0%').attr('y1', '0%').attr('x2', '70%').attr('y2', '0%')
-humanityGrad.append('stop')
-  .attr('offset', '0%')
-  .attr('style', 'stop-color:#085158;stop-opacity:60%')
-humanityGrad.append('stop')
-  .attr('offset', '100%')
-  .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
+  const humanityGrad = svg.append('defs').append('linearGradient')
+    .attr('id', 'humanityGrad')
+    .attr('x1', '0%').attr('y1', '0%').attr('x2', '70%').attr('y2', '0%')
+  humanityGrad.append('stop')
+    .attr('offset', '0%')
+    .attr('style', 'stop-color:#085158;stop-opacity:60%')
+  humanityGrad.append('stop')
+    .attr('offset', '100%')
+    .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
+}
+
+// 20度一个舒服的角度的渐变
+function gradient_angle20_i_like_using() {
+  const artGrad = svg.append('defs')
+    .append('linearGradient')
+    .attr('x1', '0%').attr('y1', '100%').attr('x2', '0%').attr('y2', '0%')
+    .attr('id', 'artGrad')
+  artGrad.append('stop')
+    .attr('offset', '0%')
+    .attr('style', 'stop-color:#085158;stop-opacity:50%')
+  artGrad.append('stop')
+    .attr('offset', '100%')
+    .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
+
+  const designGrad = svg.append('defs').append('linearGradient')
+    .attr('id', 'designGrad')
+    .attr('x1', '100%').attr('y1', '0%').attr('x2', '0%').attr('y2', '0%')
+  designGrad.append('stop')
+    .attr('offset', '0%')
+    .attr('style', 'stop-color:#00A93A;stop-opacity:50%')
+  designGrad.append('stop')
+    .attr('offset', '100%')
+    .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
+
+  const humanityGrad = svg.append('defs').append('linearGradient')
+    .attr('id', 'humanityGrad')
+    .attr('x1', '0%').attr('y1', '0%').attr('x2', '0%').attr('y2', '100%')
+  humanityGrad.append('stop')
+    .attr('offset', '0%')
+    .attr('style', 'stop-color:#085158;stop-opacity:50%')
+  humanityGrad.append('stop')
+    .attr('offset', '100%')
+    .attr('style', 'stop-color:#ffffff;stop-opacity:5%')
+}
+
+
+gradient_angle20_i_like_using()
 
 
 
